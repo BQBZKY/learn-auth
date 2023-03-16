@@ -6,4 +6,18 @@ export default defineNuxtConfig({
   ],
 
   postcss: postcssConfig,
+
+  components: {
+    dirs: [
+      {path: '~/components/formFields', pathPrefix: false},
+    ],
+  },
+
+  experimental: {
+    reactivityTransform: true,
+  },
+
+  modules: [
+    '@vueuse/nuxt',
+  ],
 })
