@@ -1,6 +1,7 @@
 <script setup lang="ts">
   export interface Props {
     value?: string
+    invalid?: boolean
     inputElType?: 'text' | 'email' | 'password'
   }
 
@@ -14,6 +15,7 @@
   const {value} = useVModels(props, emit)
 
   const {
+    invalid = false,
     inputElType,
   } = $(props)
 
@@ -25,6 +27,7 @@
 
     <label v-if="slots.label">
       <slot name="label"></slot>
+      <span v-if="invalid" class="text-red-600">invalid</span>
     </label>
 
     <input
