@@ -19,21 +19,29 @@
     inputElType,
   } = $(props)
 
-  const slots = useSlots()
+  let inputElRef = $ref<HTMLInputElement>()
+
+  defineExpose($$({
+    inputElRef,
+  }))
 </script>
 
 <template>
   <div class="BaseTextFormField">
 
-    <label v-if="slots.label">
-      <slot name="label"></slot>
-      <span v-if="invalid" class="text-red-600">invalid</span>
-    </label>
+    <label><slot name="label"></slot></label>
+
+    <span v-if="invalid" class="text-red-600">invalid</span>
 
     <input
       v-model="value"
       v-bind:type="inputElType ?? 'text'"
+      ref="inputElRef"
     />
+
+    <div class="rightSlot">
+      <slot name="right"></slot>
+    </div>
   </div>
 </template>
 
@@ -41,13 +49,20 @@
   .BaseTextFormField {
     // width: 100%;
     height: 56px;
-    padding: 6px 8px;
+    padding: 0 8px;
 
     display: grid;
+    grid-template:
+      ' label .     .        '
+      ' input input rightSlot' /
+        auto  1fr   auto
+    ;
+    gap: 0 8px;
     align-items: center;
 
     border-radius: 6px;
     background: theme('colors.zinc.100');
+    font-size: 12px;
 
     &:focus-within {
       outline: 2px solid black;
@@ -56,14 +71,14 @@
     }
 
     label {
-      display: flex;
-      gap: 0 1ch;
+      grid-area: label;
       color: theme('colors.zinc.400');
-      font-size: 12px;
       font-weight: bold;
     }
 
     input {
+      grid-area: input;
+
       background: transparent;
       color: black;
       font-size: 20px;
@@ -72,6 +87,10 @@
       &:focus {
         outline: none;
       }
+    }
+
+    .rightSlot {
+      grid-area: rightSlot;
     }
   }
 </style>
