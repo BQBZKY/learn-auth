@@ -5,6 +5,9 @@
       email: string
       password: string
     }
+    error?: {
+      message: string
+    }
   }
 
   const form = reactive<Form>({
@@ -14,10 +17,28 @@
       password: '',
     },
   })
+
+  const supabase = useSupabaseClient()
+
+  const submit = async () => {
+    let response
+
+    if (form.action === 'SIGN_IN') {
+      response = await supabase.auth.signInWithPassword(form.data)
+    }
+
+    if (form.action === 'REGISTER') {
+      response = await supabase.auth.signUp(form.data)
+    }
+
+    if (response?.error) {
+      form.error = response.error
+    }
+  }
 </script>
 
 <template>
-  <form class="AuthForm">
+  <form class="AuthForm" v-on:submit.prevent="submit()">
     <h2 class="AuthForm-title">AUTHENTICATE</h2>
 
     <div class="AuthForm-actionToggle">
@@ -64,9 +85,13 @@
       v-model="form.data.password"
     />
 
-    <button class="AuthForm-submitButton">
+    <button class="AuthForm-submitButton" type="submit">
       <Icon name="material-symbols:arrow-right-alt" />
     </button>
+
+    <span v-if="form.error" class="AuthForm-errorMessage">
+      {{ form.error.message }}
+    </span>
   </form>
 </template>
 
@@ -80,6 +105,7 @@
   }
 
   .AuthForm-title,
+  .AuthForm-errorMessage,
   .AuthForm-textInput,
   .AuthForm-actionToggle-button,
   .AuthForm-submitButton {
@@ -94,6 +120,10 @@
 
   .AuthForm-title {
     font-weight: bold;
+  }
+
+  .AuthForm-errorMessage {
+    color: red;
   }
 
   .AuthForm-actionToggle {
